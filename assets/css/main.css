@@ -238,6 +238,20 @@ header {
 header .navbar {
 	padding: 20px 0px;
 }
+header .logo_name{
+	width: 500px;
+	height: 50px;
+	background: url("../images/logo_name.png");
+	background-size: contain;
+	background-repeat:no-repeat;
+}
+.background-header .logo_name{
+	width: 500px;
+	height: 50px;
+	background: url("../images/logo_name_dark.png");
+	background-size: contain;
+	background-repeat:no-repeat;
+}
 .background-header .navbar {
 	padding: 10px 0px;
 }
@@ -315,8 +329,8 @@ header .navbar {
 	outline: none;
 	border-radius: 0px;
 	position: absolute;
-	right: 30px;
-	top: 20px;
+	right: 10px;
+	top: 60px;
 }
 .navbar .navbar-toggler-icon:after {
 	content: '\f0c9';
