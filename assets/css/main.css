@@ -1359,3 +1359,6 @@ table , td, th {
 td, th {
 	padding: 10px;
 }
+th {
+	width: 100px;
+
