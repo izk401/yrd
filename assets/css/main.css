@@ -236,7 +236,7 @@ header {
     transition: all 0.3s ease-in-out 0s;
 }
 header .navbar {
-	padding: 20px 0px;
+	padding: 10px 0px;
 }
 header .logo_name{
 	width: 500px;
@@ -323,18 +323,16 @@ header .logo_name{
 	background-image: none;
 }
 .navbar .navbar-toggler {
-	border-color: #fff;
-	background-color: #fff;	
 	height: 36px;
 	outline: none;
 	border-radius: 0px;
 	position: absolute;
 	right: 10px;
-	top: 60px;
+	top: 40px;
 }
 .navbar .navbar-toggler-icon:after {
 	content: '\f0c9';
-	color: #009bfc;
+	color: #CCC;
 	font-size: 18px;
 	line-height: 26px;
 	font-family: 'FontAwesome';
@@ -462,7 +460,7 @@ ul.slick-dots {
   text-transform: uppercase;
   font-weight: 700;
   letter-spacing: 1px;
-  color:#CCCCCC;
+  color:#EEE;
   animation:fadeOutRight 1s both;
 }
 
