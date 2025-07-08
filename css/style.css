@@ -123,7 +123,6 @@ nav a {
     font-weight: 500;
     transition: color 0.3s ease, transform 0.2s ease;
     position: relative;
-    padding-bottom: 5px;
 }
 
 nav a::after {
@@ -931,7 +930,7 @@ footer {
         height: 100vh;
         background-color: rgba(255, 255, 255, 0.9);
         flex-direction: column;
-        justify-content: center;
+        justify-content: start;
         align-items: center;
         transition: transform 0.4s ease-in-out;
         transform: translateX(100%);
@@ -955,7 +954,6 @@ footer {
 
     nav a {
         font-size: 1.2rem;
-        padding: 10px 0;
         display: block;
         width: 100%;
         text-align: center;
