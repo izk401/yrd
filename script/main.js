@@ -32,7 +32,6 @@ document.addEventListener("DOMContentLoaded", function () {
     this.classList.toggle("active");
     nav.classList.toggle("active");
     // Prevent scrolling when hamburger menu is active
-    document.body.classList.toggle("no-scroll");
     document.documentElement.classList.toggle("no-scroll");
   });
 
@@ -78,12 +77,8 @@ document.addEventListener("DOMContentLoaded", function () {
       if (nav.classList.contains("active")) {
         hamburger.classList.remove("active");
         nav.classList.remove("active");
+        document.documentElement.classList.remove("no-scroll");
       }
-
-      // ナビゲーション後にスクロールを再度有効にする
-      document.body.classList.remove("no-scroll", "modal-open");
-      document.documentElement.classList.remove("no-scroll", "modal-open");
-
     });
   });
 
@@ -152,8 +147,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!modal) return;
 
     scrollPosition = window.pageYOffset;
-    document.body.classList.add("modal-open");
-    document.body.style.top = `-${scrollPosition}px`;
+    document.documentElement.style.overflow = 'hidden';
 
     modal.classList.add("is-active");
     modal.setAttribute("aria-hidden", "false");
@@ -170,8 +164,7 @@ document.addEventListener("DOMContentLoaded", function () {
   function closeModal(modal) {
     if (!modal) return;
 
-    document.body.classList.remove("modal-open");
-    document.body.style.top = "";
+    document.documentElement.style.overflow = '';
     window.scrollTo(0, scrollPosition);
 
     modal.classList.remove("is-active");
@@ -293,7 +286,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 const walkTheDOM = (node) => {
                   if (node.nodeType === Node.TEXT_NODE) {
                     const textContent = node.textContent;
-                    const urlRegex = /(https?:\/\/[^\s<>\"']+)/g;
+                    const urlRegex = /(https?:\/\/[^\s<>"']+)/g;
 
                     if (urlRegex.test(textContent)) {
                       const fragment = document.createDocumentFragment();

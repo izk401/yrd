@@ -25,11 +25,7 @@ html, body {
     overflow-x: hidden;
 }
 
-body.modal-open {
-    position: fixed;
-    width: 100%;
-    overflow: hidden !important;
-}
+
 
 html.no-scroll, body.no-scroll {
     overflow: hidden !important;
