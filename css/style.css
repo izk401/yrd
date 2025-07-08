@@ -25,6 +25,14 @@ html, body {
     overflow-x: hidden;
 }
 
+html.modal-open, body.modal-open {
+    overflow: hidden !important;
+}
+
+html.no-scroll, body.no-scroll {
+    overflow: hidden !important;
+}
+
 body {
     font-family: 'Noto Sans JP', sans-serif;
     margin: 0;
@@ -37,10 +45,6 @@ body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     scroll-padding-top: var(--header-height);
-}
-
-body.modal-open {
-    overflow: hidden;
 }
 
 .container {
@@ -715,7 +719,7 @@ img {
 #contact {
     text-align: center;
     background-color: #f4f7f9;
-    padding: 100px 0;
+    padding: 50px 0;
     margin-bottom: 80px;
 }
 
@@ -732,18 +736,19 @@ img {
 }
 
 .contact-icon {
-    width: 30px;
-    height: 30px;
+    width: 2.5rem;
+    height: 2.5rem;
     margin-right: 10px;
     vertical-align: middle;
     filter: invert(29%) sepia(96%) saturate(2000%) hue-rotate(200deg) brightness(100%) contrast(100%);
 }
 
 .phone-number {
-    font-size: 2rem;
+    font-size: 2.5rem;
     font-weight: bold;
     color: var(--primary-color);
     letter-spacing: 1px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .reception-hours {
@@ -1040,13 +1045,28 @@ footer {
         font-size: 1.2rem;
     }
     .phone-number {
-        font-size: 1.2rem;
+        font-size: 2rem;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    .contact-icon {
+        width: 2rem;
+        height: 2rem;
     }
     footer {
         padding: 40px 0;
     }
     .footer-info ul {
         gap: 20px;
+    }
+}
+
+.mobile-only-br {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .mobile-only-br {
+        display: initial;
     }
 }
 

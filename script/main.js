@@ -31,7 +31,9 @@ document.addEventListener("DOMContentLoaded", function () {
   hamburger.addEventListener("click", function () {
     this.classList.toggle("active");
     nav.classList.toggle("active");
-    document.body.classList.toggle("no-scroll"); // 背景のスクロールを制御
+    // Prevent scrolling when hamburger menu is active
+    document.body.classList.toggle("no-scroll");
+    document.documentElement.classList.toggle("no-scroll");
   });
 
   // Smooth scroll for navigation links
@@ -76,7 +78,6 @@ document.addEventListener("DOMContentLoaded", function () {
       if (nav.classList.contains("active")) {
         hamburger.classList.remove("active");
         nav.classList.remove("active");
-        document.body.classList.remove("no-scroll");
       }
     });
   });
@@ -143,6 +144,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const closeModalButtons = document.querySelectorAll(".modal-close");
   const modalOverlays = document.querySelectorAll(".modal-overlay");
 
+  let scrollPosition = 0; // スクロール位置を保持する変数
+
   // Helper function to manage focusable elements within a modal
   function toggleModalFocus(modalElement, enableFocus) {
     const focusableElements = modalElement.querySelectorAll(
@@ -179,13 +182,25 @@ document.addEventListener("DOMContentLoaded", function () {
       const modalId = this.dataset.modalTarget;
       const modal = document.getElementById(modalId);
       if (modal) {
+        scrollPosition = window.pageYOffset; // 現在のスクロール位置を保存
+        document.body.style.top = `-${scrollPosition}px`; // スクロール位置をtopに設定
+        document.body.style.position = "fixed"; // bodyを固定
+        document.body.style.overflow = "hidden"; // bodyのスクロールを無効化
+        document.documentElement.style.overflow = "hidden"; // htmlのスクロールを無効化
+        document.body.classList.add("modal-open"); // modal-openクラスを追加
+        document.documentElement.classList.add("modal-open"); // htmlにもmodal-openクラスを追加
+
         modal.classList.add("is-active");
-        document.body.classList.add("modal-open");
         modal.setAttribute("aria-hidden", "false");
         modal.setAttribute("role", "dialog");
         modal.setAttribute("aria-modal", "true");
         toggleModalFocus(modal, true); // Make elements inside focusable
         modal.focus();
+        // モーダル内のスクロール可能な要素のスクロール位置をリセット
+        const scrollableContent = modal.querySelector('.modal-body-scrollable');
+        if (scrollableContent) {
+          scrollableContent.scrollTop = 0;
+        }
       } else {
         console.error("Modal element not found for ID:", modalId); // エラーログ
       }
@@ -197,10 +212,17 @@ document.addEventListener("DOMContentLoaded", function () {
       const modal = this.closest(".modal-overlay");
       modal.classList.remove("is-active");
       document.body.classList.remove("modal-open");
+      document.documentElement.classList.remove("modal-open");
+      document.body.style.top = "";
+      document.body.style.position = "";
+      document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
+      window.scrollTo(0, scrollPosition);
+
       modal.removeAttribute("aria-hidden");
       modal.removeAttribute("role");
       modal.removeAttribute("aria-modal");
-      toggleModalFocus(modal, false); // Make elements inside unfocusable
+      toggleModalFocus(modal, false);
     });
   });
 
@@ -209,11 +231,18 @@ document.addEventListener("DOMContentLoaded", function () {
       if (e.target === this) {
         // Close if clicked on overlay, not content
         this.classList.remove("is-active");
-        document.body.classList.remove("modal-open"); // Add this line
+        document.body.classList.remove("modal-open");
+        document.documentElement.classList.remove("modal-open");
+        document.body.style.position = "";
+        document.body.style.top = "";
+        document.body.style.overflow = "";
+        document.documentElement.style.overflow = "";
+        window.scrollTo(0, scrollPosition);
+
         this.setAttribute("aria-hidden", "true");
         this.removeAttribute("role");
         this.removeAttribute("aria-modal");
-        toggleModalFocus(this, false); // Make elements inside unfocusable
+        toggleModalFocus(this, false);
       }
     });
   });
@@ -442,17 +471,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // モーダルを表示
             newsModal.classList.add("is-active");
-            document.body.classList.add("modal-open");
-            // newsModalBodyの親要素であるmodal-body-scrollableのスクロール位置をリセット
-            const scrollableContainer = newsModalBody.closest('.modal-body-scrollable');
-            if (scrollableContainer) {
-                scrollableContainer.scrollTop = 0;
-            }
-            newsModal.setAttribute("aria-hidden", "false");
-            newsModal.setAttribute("role", "dialog");
-            newsModal.setAttribute("aria-modal", "true");
-            toggleModalFocus(newsModal, true); // Make elements inside focusable
-            newsModal.focus();
+            scrollPosition = window.pageYOffset; // 現在のスクロール位置を保存
+            document.body.style.top = `-${scrollPosition}px`; // スクロール位置をtopに設定
+            document.body.classList.add("modal-open"); // modal-openクラスを追加
+            document.documentElement.classList.add("modal-open"); // htmlにもmodal-openクラスを追加
+            document.body.style.position = "fixed"; // bodyを固定
+            document.body.style.overflow = "hidden"; // bodyのスクロールを無効化
+            document.documentElement.style.overflow = "hidden"; // htmlのスクロールを無効化
+            newsModal.classList.add("is-active");
           });
         });
       } catch (error) {
@@ -473,7 +499,14 @@ document.addEventListener("DOMContentLoaded", function () {
       const openModal = document.querySelector(".modal-overlay.is-active"); // Select by class
       if (openModal) {
         openModal.classList.remove("is-active");
-        document.body.classList.remove("modal-open"); // Remove class from body
+        document.body.classList.remove("modal-open");
+        document.documentElement.classList.remove("modal-open");
+        document.body.style.position = "";
+        document.body.style.top = "";
+        document.body.style.overflow = "";
+        document.documentElement.style.overflow = "";
+        window.scrollTo(0, scrollPosition);
+
         // No need to reset overflow here, as modal-open class handles it
         openModal.setAttribute("aria-hidden", "true");
         openModal.removeAttribute("role");
