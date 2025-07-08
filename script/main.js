@@ -202,32 +202,33 @@ document.addEventListener("DOMContentLoaded", function () {
     function parseNewsText(text) {
       const newsItems = text
         .split("---NEWS_ITEM---")
-        .filter((item) => item.trim() !== "");
-      return newsItems.map((item, index) => {
-        const lines = item.trim().split("\n");
-        let date = "";
-        let title = "";
-        let content = "";
+        .filter((item) => item.trim() !== "")
+        .map((item, index) => {
+          const lines = item.trim().split("\n");
+          let date = "";
+          let title = "";
+          let content = "";
 
-        const contentIndex = lines.findIndex((l) => l.startsWith("CONTENT:"));
-        if (contentIndex !== -1) {
-          content = lines
-            .slice(contentIndex + 1)
-            .join("\n")
-            .trim();
-        }
-
-        lines.forEach((line) => {
-          if (line.startsWith("DATE:")) {
-            date = line.substring(5).trim();
-          } else if (line.startsWith("TITLE:")) {
-            title = line.substring(6).trim();
+          const contentIndex = lines.findIndex((l) => l.startsWith("CONTENT:"));
+          if (contentIndex !== -1) {
+            content = lines
+              .slice(contentIndex + 1)
+              .join("\n")
+              .trim();
           }
-        });
 
-        const id = `news-${index}`;
-        return { id, date, title, content };
-      });
+          lines.forEach((line) => {
+            if (line.startsWith("DATE:")) {
+              date = line.substring(5).trim();
+            } else if (line.startsWith("TITLE:")) {
+              title = line.substring(6).trim();
+            }
+          });
+
+          const id = `news-${index}`;
+          return { id, date, title, content };
+        });
+      return newsItems;
     }
 
     async function loadNews() {
@@ -324,13 +325,24 @@ document.addEventListener("DOMContentLoaded", function () {
                   if (node.nodeType === Node.ELEMENT_NODE) {
                     const tagName = node.tagName.toLowerCase();
 
-                    if (
-                      ["script", "style", "iframe", "object", "embed"].includes(
-                        tagName,
-                      )
-                    ) {
+                    // XSS risks. See https://cheatsheetseries.owasp.org/cheatsheets/XSS_Filter_Evasion_Cheat_Sheet.html
+                    const forbiddenTags = [
+                      "script", "style", "iframe", "object", "embed", "form",
+                      "img", "svg", "video", "audio", "details", "dialog",
+                      "canvas", "map", "area", "input", "textarea", "select",
+                      "button", "option", "meter", "progress", "link"
+                    ];
+
+                    if (forbiddenTags.includes(tagName)) {
                       node.remove();
                       return;
+                    }
+
+                    // Remove all on* event handlers
+                    for (const attr of [...node.attributes]) {
+                      if (attr.name.toLowerCase().startsWith('on')) {
+                        node.removeAttribute(attr.name);
+                      }
                     }
 
                     if (tagName === "a") {
