@@ -79,6 +79,14 @@ document.addEventListener("DOMContentLoaded", function () {
         hamburger.classList.remove("active");
         nav.classList.remove("active");
       }
+
+      // ナビゲーション後にスクロールを再度有効にする
+      document.body.classList.remove("no-scroll", "modal-open");
+      document.documentElement.classList.remove("no-scroll", "modal-open");
+      document.body.style.top = "";
+      document.body.style.position = "";
+      document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
     });
   });
 
