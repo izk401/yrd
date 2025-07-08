@@ -495,7 +495,7 @@ img {
     height: 200px;
     object-fit: cover;
     margin-bottom: 25px;
-    border: 6px solid var(--secondary-color);
+    border: 4px solid var(--secondary-color);
     box-shadow: 0 6px 20px rgba(0,0,0,0.15);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     margin-left: auto;
@@ -551,33 +551,38 @@ img {
 }
 
 .sns-link-animated:hover {
-    transform: translate(-10px, -10px) scale(1.2);
     color: var(--secondary-color);
 }
 
 .sns-link-animated .sns-icon-area {
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    overflow: hidden;
+    width: 200px;
+    height: 200px;
     display: flex;
     justify-content: center;
     align-items: center;
-    border: 5px solid var(--primary-color);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-.sns-link-animated:hover .sns-icon-area {
-    border-color: var(--secondary-color);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
-}
+
 
 .sns-link-animated .sns-icon-area img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.3s ease;
+    border-radius: 50%;
+    margin-bottom: 25px;
+    border: 4px solid var(--secondary-color);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.sns-link-animated:hover .sns-icon-area img {
+    transform: scale(1.1) rotate(8deg);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+}
+
+.sns-link-animated:hover .sns-icon-area img {
+    transform: scale(1.1) rotate(8deg);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
 }
 
 .sns-link-animated span {
@@ -992,10 +997,6 @@ footer {
     .character-container {
         gap: 30px;
     }
-    .character-item img {
-        width: 120px;
-        height: 120px;
-    }
     #news li {
         flex-direction: column;
         align-items: flex-start;
@@ -1036,10 +1037,6 @@ footer {
     }
     .business-item h3 {
         font-size: 1.5rem;
-    }
-    .character-item img {
-        width: 100px;
-        height: 100px;
     }
     #company dt, #company dd {
         font-size: 1.2rem;
