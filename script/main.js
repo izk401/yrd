@@ -423,4 +423,38 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }
   });
+
+  // Dynamic phone number linking for mobile
+  function handlePhoneNumberLink() {
+    const phoneNumberSpan = document.querySelector(".contact-phone .phone-number");
+    if (!phoneNumberSpan) return;
+
+    const phoneNumber = phoneNumberSpan.textContent;
+    const parentP = phoneNumberSpan.closest(".contact-phone");
+
+    // Check if already linked
+    const existingLink = parentP.querySelector("a[href^='tel:']");
+
+    if (window.innerWidth <= 768) { // Mobile breakpoint
+      if (!existingLink) {
+        const telLink = document.createElement("a");
+        telLink.href = `tel:${phoneNumber.replace(/-/g, '')}`;
+        telLink.style.textDecoration = "none"; // Remove underline
+        telLink.style.color = "inherit"; // Keep original color
+        telLink.appendChild(phoneNumberSpan);
+        parentP.appendChild(telLink);
+      }
+    } else { // Desktop
+      if (existingLink) {
+        parentP.appendChild(phoneNumberSpan);
+        existingLink.remove();
+      }
+    }
+  }
+
+  // Initial call
+  handlePhoneNumberLink();
+
+  // Call on resize
+  window.addEventListener("resize", handlePhoneNumberLink);
 });
