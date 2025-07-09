@@ -285,34 +285,59 @@ document.addEventListener("DOMContentLoaded", function () {
               );
 
               function sanitizeAndLinkify(str) {
-                // まず、プレーンテキスト内のURLをリンク化する処理
-                // DOMPurify はHTMLをサニタイズするツールであり、プレーンテキスト内のURLを自動的にリンク化する機能は持たないため、
-                // この処理はDOMPurifyの前に実行する必要があります。
-                const urlRegex = /(https?:\/\/[^\s<>"']+)/g;
-                let linkedStr = str.replace(urlRegex, (match) => {
-                  // URLをaタグに変換し、target="_blank" と rel="noopener noreferrer" を追加
-                  return `<a href="${match}" target="_blank" rel="noopener noreferrer">${match}</a>`;
-                });
+                // 1. Create a temporary div to parse the string as HTML
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = str;
 
-                // DOMPurify を使用してサニタイズ
-                // DOMPurify.sanitize はHTML文字列を受け取り、安全なHTML文字列を返します。
-                // ここでは、URLリンク化によって生成されたHTMLをサニタイズします。
-                const cleanHtml = DOMPurify.sanitize(linkedStr, {
-                  USE_PROFILES: { html: true }, // HTMLプロファイルを有効にする
-                  ALLOWED_TAGS: ['a', 'p', 'br'], // 許可するタグを明示的に指定。p, brは既存の処理で使われているため追加。
+                // 2. Define the URL regex
+                const urlRegex = /(https?:\/\/[^\s<>"']+)/g;
+
+                // 3. Traverse the DOM tree and process text nodes
+                function processNode(node) {
+                  if (node.nodeType === Node.TEXT_NODE) { // It's a text node
+                    const originalText = node.nodeValue;
+                    if (urlRegex.test(originalText)) {
+                      // Create a temporary span to hold the new HTML
+                      const tempSpan = document.createElement('span');
+                      tempSpan.innerHTML = originalText.replace(urlRegex, (match) => {
+                        return `<a href="${match}" target="_blank" rel="noopener noreferrer">${match}</a>`;
+                      });
+                      // Replace the text node with the new HTML content
+                      while (tempSpan.firstChild) {
+                        node.parentNode.insertBefore(tempSpan.firstChild, node);
+                      }
+                      node.parentNode.removeChild(node);
+                    }
+                  } else if (node.nodeType === Node.ELEMENT_NODE) { // It's an element node
+                    // Skip processing children of <a> tags to avoid re-linkifying
+                    if (node.tagName.toLowerCase() === 'a') {
+                      return;
+                    }
+                    // Recursively process child nodes
+                    for (let i = 0; i < node.childNodes.length; i++) {
+                      processNode(node.childNodes[i]);
+                    }
+                  }
+                }
+
+                processNode(tempDiv); // Start processing from the temporary div
+
+                // 4. Get the modified HTML string
+                const processedHtml = tempDiv.innerHTML;
+
+                // 5. Sanitize the HTML using DOMPurify
+                const cleanHtml = DOMPurify.sanitize(processedHtml, {
+                  USE_PROFILES: { html: true },
+                  ALLOWED_TAGS: ['a', 'p', 'br'],
                   FORBID_TAGS: [
                     "script", "style", "iframe", "object", "embed", "form",
                     "img", "svg", "video", "audio", "details", "dialog",
                     "canvas", "map", "area", "input", "textarea", "select",
                     "button", "option", "meter", "progress", "link"
                   ],
-                  FORBID_ATTR: ["on*"], // すべてのon*イベントハンドラを禁止
-                  ADD_ATTR: ["target", "rel", "href"], // target, rel, href属性を許可
-                  ADD_URI_SAFE_ATTR: ["href"], // href属性をURIとして安全な属性として明示的に許可
-                  // aタグのhref属性のプロトコルを制限するオプションはDOMPurifyには直接ありません。
-                  // URLリンク化の段階でhttps?のみを対象としているため、ある程度はカバーされています。
-                  // もしmailto:なども許可したい場合は、URLリンク化の正規表現を調整するか、
-                  // DOMPurifyのADD_URI_SAFE_ATTRやカスタムフックを使用する必要があります。
+                  FORBID_ATTR: ["on*"], 
+                  ADD_ATTR: ["target", "rel", "href"], 
+                  ADD_URI_SAFE_ATTR: ["href"],
                 });
 
                 return cleanHtml;
