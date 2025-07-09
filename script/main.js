@@ -167,6 +167,11 @@ document.addEventListener("DOMContentLoaded", function () {
     document.documentElement.style.overflow = '';
     window.scrollTo(0, scrollPosition);
 
+    // フォーカスを外す処理を追加
+    if (document.activeElement) {
+      document.activeElement.blur();
+    }
+
     modal.classList.remove("is-active");
     modal.setAttribute("aria-hidden", "true");
     modal.removeAttribute("role");
@@ -280,106 +285,37 @@ document.addEventListener("DOMContentLoaded", function () {
               );
 
               function sanitizeAndLinkify(str) {
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(str, "text/html");
-                const body = doc.body;
+                // まず、プレーンテキスト内のURLをリンク化する処理
+                // DOMPurify はHTMLをサニタイズするツールであり、プレーンテキスト内のURLを自動的にリンク化する機能は持たないため、
+                // この処理はDOMPurifyの前に実行する必要があります。
+                const urlRegex = /(https?:\/\/[^\s<>"']+)/g;
+                let linkedStr = str.replace(urlRegex, (match) => {
+                  // URLをaタグに変換し、target="_blank" と rel="noopener noreferrer" を追加
+                  return `<a href="${match}" target="_blank" rel="noopener noreferrer">${match}</a>`;
+                });
 
-                const walkTheDOM = (node) => {
-                  if (node.nodeType === Node.TEXT_NODE) {
-                    const textContent = node.textContent;
-                    const urlRegex = /(https?:\/\/[^\s<>"']+)/g;
+                // DOMPurify を使用してサニタイズ
+                // DOMPurify.sanitize はHTML文字列を受け取り、安全なHTML文字列を返します。
+                // ここでは、URLリンク化によって生成されたHTMLをサニタイズします。
+                const cleanHtml = DOMPurify.sanitize(linkedStr, {
+                  USE_PROFILES: { html: true }, // HTMLプロファイルを有効にする
+                  ALLOWED_TAGS: ['a', 'p', 'br'], // 許可するタグを明示的に指定。p, brは既存の処理で使われているため追加。
+                  FORBID_TAGS: [
+                    "script", "style", "iframe", "object", "embed", "form",
+                    "img", "svg", "video", "audio", "details", "dialog",
+                    "canvas", "map", "area", "input", "textarea", "select",
+                    "button", "option", "meter", "progress", "link"
+                  ],
+                  FORBID_ATTR: ["on*"], // すべてのon*イベントハンドラを禁止
+                  ADD_ATTR: ["target", "rel", "href"], // target, rel, href属性を許可
+                  ADD_URI_SAFE_ATTR: ["href"], // href属性をURIとして安全な属性として明示的に許可
+                  // aタグのhref属性のプロトコルを制限するオプションはDOMPurifyには直接ありません。
+                  // URLリンク化の段階でhttps?のみを対象としているため、ある程度はカバーされています。
+                  // もしmailto:なども許可したい場合は、URLリンク化の正規表現を調整するか、
+                  // DOMPurifyのADD_URI_SAFE_ATTRやカスタムフックを使用する必要があります。
+                });
 
-                    if (urlRegex.test(textContent)) {
-                      const fragment = document.createDocumentFragment();
-                      let lastIndex = 0;
-                      textContent.replace(urlRegex, (match, offset) => {
-                        if (offset > lastIndex) {
-                          fragment.appendChild(
-                            document.createTextNode(
-                              textContent.substring(lastIndex, offset),
-                            ),
-                          );
-                        }
-                        const a = document.createElement("a");
-                        a.href = match;
-                        a.textContent = match;
-                        a.target = "_blank";
-                        a.rel = "noopener noreferrer";
-                        fragment.appendChild(a);
-                        lastIndex = offset + match.length;
-                      });
-                      if (lastIndex < textContent.length) {
-                        fragment.appendChild(
-                          document.createTextNode(
-                            textContent.substring(lastIndex),
-                          ),
-                        );
-                      }
-                      if (node.parentNode) {
-                        node.parentNode.replaceChild(fragment, node);
-                      }
-                    }
-                    return;
-                  }
-
-                  if (node.nodeType === Node.ELEMENT_NODE) {
-                    const tagName = node.tagName.toLowerCase();
-
-                    // XSS risks. See https://cheatsheetseries.owasp.org/cheatsheets/XSS_Filter_Evasion_Cheat_Sheet.html
-                    const forbiddenTags = [
-                      "script", "style", "iframe", "object", "embed", "form",
-                      "img", "svg", "video", "audio", "details", "dialog",
-                      "canvas", "map", "area", "input", "textarea", "select",
-                      "button", "option", "meter", "progress", "link"
-                    ];
-
-                    if (forbiddenTags.includes(tagName)) {
-                      node.remove();
-                      return;
-                    }
-
-                    // Remove all on* event handlers
-                    for (const attr of [...node.attributes]) {
-                      if (attr.name.toLowerCase().startsWith('on')) {
-                        node.removeAttribute(attr.name);
-                      }
-                    }
-
-                    if (tagName === "a") {
-                      const href = node.getAttribute("href");
-                      if (href) {
-                        try {
-                          const url = new URL(href, window.location.origin);
-                          if (
-                            !["http:", "https:", "mailto:"].includes(
-                              url.protocol,
-                            )
-                          ) {
-                            node.removeAttribute("href");
-                          } else {
-                            node.target = "_blank";
-                            node.rel = "noopener noreferrer";
-                          }
-                        } catch (e) {
-                          node.removeAttribute("href");
-                        }
-                      }
-                      const allowedAttributes = ["href", "target", "rel"];
-                      for (const attr of [...node.attributes]) {
-                        if (
-                          !allowedAttributes.includes(attr.name.toLowerCase())
-                        ) {
-                          node.removeAttribute(attr.name);
-                        }
-                      }
-                    }
-                  }
-
-                  [...node.childNodes].forEach(walkTheDOM);
-                };
-
-                walkTheDOM(body);
-                return body.innerHTML;
+                return cleanHtml;
               }
 
               newsModalBody.innerHTML = "";
