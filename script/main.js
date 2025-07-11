@@ -31,13 +31,36 @@ document.addEventListener("DOMContentLoaded", function () {
   hamburger.addEventListener("click", function () {
     this.classList.toggle("active");
     nav.classList.toggle("active");
-    // Prevent scrolling when hamburger menu is active
     document.documentElement.classList.toggle("no-scroll");
+
+    // メニューが非アクティブになる時（閉じる時）にサブメニューをリセット
+    if (!nav.classList.contains("active")) {
+      document.querySelectorAll('.has-submenu.submenu-open').forEach(openSubmenu => {
+        openSubmenu.classList.remove('submenu-open');
+      });
+    }
   });
 
   // Smooth scroll for navigation links
   document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
     anchor.addEventListener("click", function (e) {
+      // サブメニューを持つリンクの親要素(.has-submenu)で、モバイル表示の場合
+      if (this.parentElement.classList.contains('has-submenu') && window.innerWidth <= 768) {
+        e.preventDefault();
+        const parentLi = this.parentElement;
+
+        // 現在開いている他のサブメニューを閉じる
+        document.querySelectorAll('.has-submenu.submenu-open').forEach(openSubmenu => {
+          if (openSubmenu !== parentLi) {
+            openSubmenu.classList.remove('submenu-open');
+          }
+        });
+
+        // クリックされたサブメニューを開閉する
+        parentLi.classList.toggle('submenu-open');
+        return;
+      }
+
       // モーダル用のリンクは除外
       if (
         this.classList.contains("open-modal") ||
@@ -97,7 +120,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Scroll-based animations for sections with staggered effect
   const animatedElements = document.querySelectorAll(
-    ".content-section, .business-item, .character-item, .case-study",
+    ".content-section, .business-item, .character-item, .case-study, .sns-link-animated",
   );
 
   const observer = new IntersectionObserver(

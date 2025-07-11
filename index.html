@@ -15,11 +15,25 @@
         <nav>
           <ul>
             <li><a href="#about">会社紹介</a></li>
-            <li><a href="#business">事業紹介</a></li>
+            <li class="has-submenu">
+              <a href="#business">事業紹介</a>
+              <ul class="submenu">
+                <li><a href="tourism.html">観光価値創造事業</a></li>
+                <li><a href="decarbonization.html">脱炭素関連事業</a></li>
+                <li><a href="marketing.html">広告宣伝・マーケティング事業</a></li>
+              </ul>
+            </li>
             <li><a href="#character">公式キャラクター</a></li>
             <li><a href="#sns">公式SNS</a></li>
             <li><a href="#news">お知らせ</a></li>
-            <li><a href="#company">会社概要</a></li>
+            <li class="has-submenu">
+              <a href="#company">会社概要</a>
+              <ul class="submenu">
+                <li><a href="#company-info">基本情報</a></li>
+                <li><a href="#access">アクセス</a></li>
+                <li><a href="#related-links">関連リンク</a></li>
+              </ul>
+            </li>
             <li><a href="#contact">お問い合わせ</a></li>
           </ul>
         </nav>
@@ -146,7 +160,7 @@
 
       <section id="company" class="container content-section animate-on-scroll">
         <h2>会社概要</h2>
-        <dl>
+        <dl id="company-info">
           <dt>会社名</dt>
           <dd>やまなし地域デザイン株式会社</dd>
           <dt>設立年月日</dt>
@@ -164,7 +178,7 @@
             （山梨中央銀行本店内）
           </dd>
         </dl>
-        <div class="access">
+        <div id="access" class="access">
           <h3>アクセス</h3>
           <iframe
             src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3241.6205147012274!2d138.56726161061562!3d35.661720230932545!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x601bf9c55e318f51%3A0xd18993135bd766e6!2z5bGx5qKo5Lit5aSu6YqA6KGMIOacrOW6l-WWtualremDqA!5e0!3m2!1sja!2sjp!4v1751433538226!5m2!1sja!2sjp"
@@ -174,7 +188,7 @@
             title="山梨中央銀行本店へのアクセス"
           ></iframe>
         </div>
-        <div class="related-links">
+        <div id="related-links" class="related-links">
           <h3>関連リンク</h3>
           <ul>
             <li><a href="https://www.yamanashibank.co.jp/">山梨中央銀行</a></li>

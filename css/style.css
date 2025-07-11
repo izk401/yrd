@@ -143,6 +143,46 @@ nav a:hover::after {
     width: 100%;
 }
 
+/* Submenu styles */
+.has-submenu {
+    position: relative;
+}
+
+.submenu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: white;
+    list-style: none;
+    padding: 10px 0;
+    margin: 0;
+    border-radius: 5px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    min-width: 220px;
+    z-index: 1001;
+}
+
+.has-submenu:hover .submenu {
+    display: block;
+}
+
+.submenu li {
+    margin: 0;
+}
+
+.submenu li a {
+    display: block;
+    padding: 10px 20px;
+    color: var(--text-color);
+    white-space: nowrap;
+}
+
+.submenu li a:hover {
+    background-color: var(--light-gray);
+    color: var(--primary-color);
+}
+
 .hamburger {
     display: none;
     cursor: pointer;
@@ -478,7 +518,7 @@ img {
     text-align: center;
     opacity: 0;
     transform: translateY(50px);
-    transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+    transition: opacity 1.0s ease-out, transform 1.0s ease-out;
 }
 
 .character-item.is-visible {
@@ -494,14 +534,14 @@ img {
     margin-bottom: 25px;
     border: 4px solid var(--secondary-color);
     box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
     margin-left: auto;
     margin-right: auto;
+    /* 初期状態 */
+    transform: scale(1) rotate(0deg);
 }
 
-.character-item:hover img {
-    transform: scale(1.1) rotate(8deg);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+.character-item.is-visible img {
+    animation: imagePopEffect 1.0s cubic-bezier(0.25, 0.8, 0.25, 1) forwards 1.0s;
 }
 
 .character-item h3 {
@@ -544,11 +584,14 @@ img {
     align-items: center;
     text-decoration: none;
     color: var(--primary-color);
-    transition: transform 0.3s ease, color 0.3s ease;
+    opacity: 0;
+    transform: translateY(50px);
+    transition: opacity 1.0s ease-out, transform 1.0s ease-out;
 }
 
-.sns-link-animated:hover {
-    color: var(--secondary-color);
+.sns-link-animated.is-visible {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 .sns-link-animated .sns-icon-area {
@@ -569,17 +612,12 @@ img {
     margin-bottom: 25px;
     border: 4px solid var(--secondary-color);
     box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    /* 初期状態 */
+    transform: scale(1) rotate(0deg);
 }
 
-.sns-link-animated:hover .sns-icon-area img {
-    transform: scale(1.1) rotate(8deg);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
-}
-
-.sns-link-animated:hover .sns-icon-area img {
-    transform: scale(1.1) rotate(8deg);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+.sns-link-animated.is-visible .sns-icon-area img {
+    animation: imagePopEffect 1.0s cubic-bezier(0.25, 0.8, 0.25, 1) forwards 1.0s;
 }
 
 .sns-link-animated span {
@@ -928,10 +966,12 @@ footer {
         height: 100vh;
         background-color: rgba(255, 255, 255, 0.9);
         flex-direction: column;
-        justify-content: start;
+        justify-content: flex-start; /* flex-startに統一 */
         align-items: center;
         transition: transform 0.4s ease-in-out;
         transform: translateX(100%);
+        overflow-y: auto; /* 縦方向のスクロールを許可 */
+        padding-top: var(--header-height); /* ヘッダー分の高さを確保 */
     }
 
     nav.active {
@@ -955,6 +995,18 @@ footer {
         display: block;
         width: 100%;
         text-align: center;
+    }
+
+    .submenu {
+        display: none;
+        position: static;
+        background-color: transparent;
+        box-shadow: none;
+        padding-left: 20px;
+    }
+
+    .has-submenu.submenu-open .submenu {
+        display: block;
     }
 
     .hamburger {
@@ -1081,6 +1133,28 @@ footer {
 
 @media (min-width: 769px) { /* PC表示のブレークポイント */
     .pc-only-br {
-        display: initial; /* PC表示では表示 */
+        display: initial;
+    }
+}
+
+@keyframes fadeInAndFloatUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes imagePopEffect {
+    from {
+        transform: scale(1);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    }
+    to {
+        transform: scale(1.2);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.25);
     }
 }
